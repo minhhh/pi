@@ -14,6 +14,7 @@ export interface ExtensionSelectorOptions {
 	timeout?: number;
 	onToggleToolsExpanded?: () => void;
 	description?: string;
+	orientation?: "vertical" | "horizontal";
 }
 
 export class ExtensionSelectorComponent extends Container {
@@ -26,6 +27,7 @@ export class ExtensionSelectorComponent extends Container {
 	private baseTitle: string;
 	private countdown: CountdownTimer | undefined;
 	private onToggleToolsExpanded: (() => void) | undefined;
+	private orientation: "vertical" | "horizontal";
 
 	constructor(
 		title: string,
@@ -37,13 +39,13 @@ export class ExtensionSelectorComponent extends Container {
 		super();
 
 		this.options = options;
+		this.orientation = opts?.orientation ?? "vertical";
 		this.onSelectCallback = onSelect;
 		this.onCancelCallback = onCancel;
 		this.onToggleToolsExpanded = opts?.onToggleToolsExpanded;
 		this.baseTitle = title;
 
 		this.addChild(new DynamicBorder());
-		this.addChild(new Spacer(1));
 
 		this.titleText = new Text(theme.fg("accent", theme.bold(title)), 1, 0);
 		this.addChild(this.titleText);
@@ -67,7 +69,7 @@ export class ExtensionSelectorComponent extends Container {
 		this.addChild(new Spacer(1));
 		this.addChild(
 			new Text(
-				rawKeyHint("↑↓", "navigate") +
+				rawKeyHint(this.orientation === "horizontal" ? "←→" : "↑↓", "navigate") +
 					"  " +
 					keyHint("tui.select.confirm", "select") +
 					"  " +
@@ -76,7 +78,6 @@ export class ExtensionSelectorComponent extends Container {
 				0,
 			),
 		);
-		this.addChild(new Spacer(1));
 		this.addChild(new DynamicBorder());
 
 		this.updateList();
@@ -84,6 +85,17 @@ export class ExtensionSelectorComponent extends Container {
 
 	private updateList(): void {
 		this.listContainer.clear();
+		if (this.orientation === "horizontal") {
+			const row = this.options
+				.map((option, i) =>
+					i === this.selectedIndex
+						? theme.bg("selectedBg", theme.fg("error", theme.bold(`  ${option}  `)))
+						: `  ${option}  `,
+				)
+				.join(" ");
+			this.listContainer.addChild(new Text(row, 1, 0));
+			return;
+		}
 		for (let i = 0; i < this.options.length; i++) {
 			const isSelected = i === this.selectedIndex;
 			const text = isSelected
@@ -97,10 +109,18 @@ export class ExtensionSelectorComponent extends Container {
 		const kb = getKeybindings();
 		if (kb.matches(keyData, "app.tools.expand")) {
 			this.onToggleToolsExpanded?.();
-		} else if (kb.matches(keyData, "tui.select.up") || keyData === "k") {
+		} else if (
+			kb.matches(keyData, "tui.select.up") ||
+			keyData === "k" ||
+			(this.orientation === "horizontal" && keyData === "\x1b[D")
+		) {
 			this.selectedIndex = Math.max(0, this.selectedIndex - 1);
 			this.updateList();
-		} else if (kb.matches(keyData, "tui.select.down") || keyData === "j") {
+		} else if (
+			kb.matches(keyData, "tui.select.down") ||
+			keyData === "j" ||
+			(this.orientation === "horizontal" && keyData === "\x1b[C")
+		) {
 			this.selectedIndex = Math.min(this.options.length - 1, this.selectedIndex + 1);
 			this.updateList();
 		} else if (kb.matches(keyData, "tui.select.confirm") || keyData === "\n") {
