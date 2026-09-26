@@ -54,6 +54,9 @@ export interface RetrySettings {
 export type TuiMode = RendererTuiMode;
 export type FullscreenExitOutput = "transcript" | "resume-hint";
 
+/** Layout for extension select menus. Default: "vertical". */
+export type SelectOrientation = "vertical" | "horizontal";
+
 export interface TerminalSettings {
 	showImages?: boolean; // default: true (only relevant if terminal supports images)
 	imageWidthCells?: number; // default: 60 (preferred inline image width in terminal cells)
@@ -172,6 +175,7 @@ export interface Settings {
 	editorPaddingX?: number; // Horizontal padding for input editor (default: 0)
 	outputPad?: 0 | 1; // Horizontal padding for chat message output (default: 1)
 	autocompleteMaxVisible?: number; // Max visible items in autocomplete dropdown (default: 5)
+	selectOrientation?: SelectOrientation; // Layout for extension select menus (default: "vertical")
 	showHardwareCursor?: boolean; // Show terminal cursor while still positioning it for IME
 	markdown?: MarkdownSettings;
 	warnings?: WarningSettings;
@@ -1502,6 +1506,16 @@ export class SettingsManager {
 	setAutocompleteMaxVisible(maxVisible: number): void {
 		this.globalSettings.autocompleteMaxVisible = Math.max(3, Math.min(20, Math.floor(maxVisible)));
 		this.markModified("autocompleteMaxVisible");
+		this.save();
+	}
+
+	getSelectOrientation(): SelectOrientation {
+		return this.settings.selectOrientation === "horizontal" ? "horizontal" : "vertical";
+	}
+
+	setSelectOrientation(orientation: SelectOrientation): void {
+		this.globalSettings.selectOrientation = orientation;
+		this.markModified("selectOrientation");
 		this.save();
 	}
 
