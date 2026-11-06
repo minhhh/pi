@@ -383,6 +383,12 @@ export const SettingsSchema = Type.Object(
 		showHardwareCursor: Type.Optional(
 			Type.Boolean({ description: "Show the terminal cursor while still positioning it for IME." }),
 		),
+		selectOrientation: Type.Optional(
+			Type.Union([Type.Literal("vertical"), Type.Literal("horizontal")], {
+				description: "Layout for extension select menus.",
+				default: SETTINGS_DEFAULTS.selectOrientation,
+			}),
+		),
 		markdown: Type.Optional(MarkdownSettingsSchema),
 		warnings: Type.Optional(WarningSettingsSchema),
 		codemode: Type.Optional(CodemodeSettingsSchema),
@@ -475,6 +481,7 @@ export type SessionShareDestination = NonNullable<SettingsInput["sessionShareDes
 export type PackageSource = Static<typeof PackageSourceSchema>;
 export type FullscreenExitOutput = NonNullable<SettingsInput["fullscreenExitOutput"]>;
 export type TuiMode = NonNullable<SettingsInput["tuiMode"]>;
+export type SelectOrientation = NonNullable<SettingsInput["selectOrientation"]>;
 export type CacheWarmingMode = NonNullable<SettingsInput["cacheWarming"]>;
 export interface Settings extends Omit<SettingsInput, "queueMode" | "retry" | "skills" | "websockets"> {
 	retry?: RetrySettings;

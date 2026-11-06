@@ -47,6 +47,7 @@ export const SETTINGS_DEFAULTS = {
 	editorPaddingX: 0,
 	outputPad: 1,
 	autocompleteMaxVisible: 5,
+	selectOrientation: "vertical",
 	markdown: {
 		codeBlockIndent: "  ",
 		mermaid: "streaming",

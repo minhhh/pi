@@ -18,6 +18,7 @@ import type {
 	MermaidRenderingMode,
 	PackageSource,
 	QuietStartup,
+	SelectOrientation,
 	SessionShareDestination,
 	Settings,
 	ThinkingBudgetsSettings,
@@ -42,6 +43,7 @@ export type {
 	ProviderRetrySettings,
 	QuietStartup,
 	RetrySettings,
+	SelectOrientation,
 	SessionShareDestination,
 	Settings,
 	TerminalSettings,
@@ -1412,6 +1414,16 @@ export class SettingsManager {
 	setAutocompleteMaxVisible(maxVisible: number): void {
 		this.globalSettings.autocompleteMaxVisible = Math.max(3, Math.min(20, Math.floor(maxVisible)));
 		this.markModified("autocompleteMaxVisible");
+		this.save();
+	}
+
+	getSelectOrientation(): SelectOrientation {
+		return this.settings.selectOrientation === "horizontal" ? "horizontal" : "vertical";
+	}
+
+	setSelectOrientation(orientation: SelectOrientation): void {
+		this.globalSettings.selectOrientation = orientation;
+		this.markModified("selectOrientation");
 		this.save();
 	}
 
